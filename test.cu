@@ -20,10 +20,8 @@ void verify_result(std::vector<int> &a, std::vector<int> &b,
                                    std::vector<int> &c) {
           for (int i = 0; i < a.size(); i++) {
                       int expected_result = a[i] + b[i];
-                          if (c[i] == expected_result) {
-                                        std::cout << "Operation: " << a[i] << " + " << b[i] << " = " << c[i] << " (Expected: " << expected_result << ")\n";
-                                            } else {
-                                                          std::cout << "Operation: " << a[i] << " + " << b[i] << " = " << c[i] << " (Expected: " << expected_result << ") [ERROR]\n";
+                          if (c[i] != expected_result) {
+                                        std::cout << "Operation: " << a[i] << " + " << b[i] << " = " << c[i] << " (Expected: " << expected_result << ") [ERROR]\n";
                                                                 std::cout << "Id number: " << i ;
                                                                       assert(false); // This will trigger an assertion failure
                                                                           }
@@ -34,7 +32,7 @@ void verify_result(std::vector<int> &a, std::vector<int> &b,
 int main() {
           cudaError_t cudaStatus;
             // Array size of 2^16 (65536 elements)
-            constexpr int N = 1 << 16;
+            constexpr int N = 1 << 8;
               constexpr size_t bytes = sizeof(int) * N;
 
                 // Vectors for holding the host-side (CPU-side) data
@@ -51,17 +49,17 @@ int main() {
                                             b.push_back(rand() % 100);
                                               }
 
-                              std::cout << "Vector A: ";
+                              //std::cout << "Vector A: ";
                                 for (int i = 0; i < N; i++) {
-                                            std::cout << a[i] << " ";
+                                            //std::cout << a[i] << " ";
                                               }
-                                  std::cout << std::endl;
+                                 // std::cout << std::endl;
 
-                                    std::cout << "Vector B: ";
+                                   // std::cout << "Vector B: ";
                                       for (int i = 0; i < N; i++) {
-                                                  std::cout << b[i] << " ";
+                                     //             std::cout << b[i] << " ";
                                                     }
-                                        std::cout << std::endl;
+                                       // std::cout << std::endl;
 
                                           // Allocate memory on the device
                                           int *d_a, *d_b, *d_c;
@@ -111,11 +109,11 @@ int main() {
                                                             cudaMemcpy(c.data(), d_c, bytes, cudaMemcpyDeviceToHost);
 
                                                               // Print data on the CPU side after kernel launch
-                                                             std::cout << "Vector C: ";
+                                                             //std::cout << "Vector C: ";
                                                               for (int i = 0; i < N; i++) {
-                                                                         std::cout << c[i] << " ";
+                                                               //          std::cout << c[i] << " ";
                                                                           }
-                                                               std::cout << std::endl;
+                                                              // std::cout << std::endl;
 
                                                                  // Check result for errors
                                                                  verify_result(a, b, c);
@@ -126,9 +124,9 @@ int main() {
                                                                        cudaFree(d_c);
 
 
-                                                                       std::cout << "COMPLETED SUCCESSFULLY\n";
+                                                                      // std::cout << "COMPLETED SUCCESSFULLY\n";
 
-                                                                       std::cout << "Total execution time:  " << milliseconds << " ms\n";
+                                                                      // std::cout << "Total execution time:  " << milliseconds << " ms\n";
 
                                                                  return 0;
 }

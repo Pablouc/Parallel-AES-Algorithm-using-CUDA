@@ -525,7 +525,25 @@ cudaMemcpy(cuda_key, key, 16*15*sizeof(BYTE), cudaMemcpyHostToDevice);
 //printf("size = : %d\n", sizeof(class aes_block));
 //printf("host: aes block number: %d\n", block_number);
 //printf("host: expand key length: %d\n", expandKeyLen);
+cudaEvent_t start, stop;
+float elapsedTime;
+
+// Create CUDA events for timing
+cudaEventCreate(&start);
+cudaEventCreate(&stop);
+
+// Record the start event
+cudaEventRecord(start, 0);
+
 AES_Encrypt <<< BlockperGrid, ThreadperBlock>>>(cuda_aes_block_array, cuda_key, expandKeyLen, block_number);
+
+// Record the stop event
+cudaEventRecord(stop, 0);
+cudaEventSynchronize(stop);
+
+// Calculate the elapsed time
+cudaEventElapsedTime(&elapsedTime, start, stop);
+std::cout << "GPU elapsed time in encryption: " << elapsedTime << " ms" << std::endl;
 
 cudaMemcpy(aes_block_array, cuda_aes_block_array, block_number*sizeof(class aes_block), cudaMemcpyDeviceToHost);
 
@@ -537,8 +555,22 @@ if(number_of_zero_pending == 0)
 else 
     f1printBytes(aes_block_array[block_number-1].block, blockLen, en_fp);
 
+    
+    
+// Record the start event
+cudaEventRecord(start, 0);
 
 AES_Decrypt <<< BlockperGrid, ThreadperBlock>>>(cuda_aes_block_array, cuda_key, expandKeyLen, block_number);
+
+// Record the stop event
+cudaEventRecord(stop, 0);
+cudaEventSynchronize(stop);
+
+// Calculate the elapsed time
+cudaEventElapsedTime(&elapsedTime, start, stop);
+std::cout << "GPU elapsed time in Decryption: " << elapsedTime << " ms" << std::endl;
+
+
 
 cudaMemcpy(aes_block_array, cuda_aes_block_array, block_number*sizeof(class aes_block), cudaMemcpyDeviceToHost);
 
